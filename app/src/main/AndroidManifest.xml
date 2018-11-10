@@ -21,7 +21,8 @@
             android:name=".ui.activities.StepsActivity"
             android:launchMode="singleTask"
             android:parentActivityName=".ui.activities.RecipeActivity" />
-        <activity android:name=".ui.activities.StepDetailsActivity" />
+        <activity android:name=".ui.activities.StepDetailsActivity"
+            android:configChanges= "keyboardHidden|orientation|screenSize"/>
 
         <receiver android:name=".widget.RecipeWidgetProvider">
             <intent-filter>

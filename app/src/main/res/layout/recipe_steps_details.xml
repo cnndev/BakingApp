@@ -32,6 +32,15 @@
                 android:src="@drawable/novideo"
                 android:visibility="gone"
                 android:scaleType="centerCrop"/>
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/thumbnailurl"
+                android:src="@drawable/ic_back"
+                android:visibility="invisible"
+                android:scaleType="centerCrop"/>
+
+
         </FrameLayout>
 
         <FrameLayout
