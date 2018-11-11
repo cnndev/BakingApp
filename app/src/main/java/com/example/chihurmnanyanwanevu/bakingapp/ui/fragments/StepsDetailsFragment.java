@@ -10,8 +10,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +57,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by Chihurumnanya.
@@ -125,6 +129,7 @@ public class StepsDetailsFragment extends Fragment {
     int width = 0;
     int height = 0;
 
+
     private ListItemClickListener itemClickListener;
     public interface ListItemClickListener {
         void onListItemClick(List<Step> allSteps,int Index,String recipeName);
@@ -175,6 +180,8 @@ public class StepsDetailsFragment extends Fragment {
             currentStep.setText((position + 1) + "/" + numberOfSteps);
         }
 
+
+
         prevVideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -195,6 +202,7 @@ public class StepsDetailsFragment extends Fragment {
 
         return root;
     }
+
 
     private void setStepDescriptionText(int position) {
         stepDescription.setText(step.getDescription());
@@ -280,6 +288,7 @@ public class StepsDetailsFragment extends Fragment {
         }
     }
 
+
     private void setSpecificCaseUi() {
         if (isTablet) {
             return;
@@ -299,6 +308,7 @@ public class StepsDetailsFragment extends Fragment {
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
+
 
     @Override
     public void onStart() {
@@ -332,6 +342,14 @@ public class StepsDetailsFragment extends Fragment {
         });
     }
 
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        Log.d(TAG, "onSaveInstanceState: ");
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putLong("position", mExoPlayer.getCurrentPosition());
+        savedInstanceState.putBoolean(EXOPLAYER_POSITION, mExoPlayer.getPlayWhenReady());
+    }
+
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -360,6 +378,8 @@ public class StepsDetailsFragment extends Fragment {
         currentState.putInt(NUMBER_OF_STEPS,selectedIndex);
         currentState.putString("Title",recipeName);
     }
+
+
 
     public boolean isInLandscapeMode( Context context ) {
         return (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
