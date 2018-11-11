@@ -342,13 +342,6 @@ public class StepsDetailsFragment extends Fragment {
         });
     }
 
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        Log.d(TAG, "onSaveInstanceState: ");
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putLong("position", mExoPlayer.getCurrentPosition());
-        savedInstanceState.putBoolean(EXOPLAYER_POSITION, mExoPlayer.getPlayWhenReady());
-    }
-
 
     @Override
     public void onAttach(Activity activity) {
@@ -377,8 +370,15 @@ public class StepsDetailsFragment extends Fragment {
         currentState.putParcelableArrayList(STEP_CLICKED,steps);
         currentState.putInt(NUMBER_OF_STEPS,selectedIndex);
         currentState.putString("Title",recipeName);
-    }
 
+    }
+    
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "onRestoreInstanceState: ");
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putLong("position", mExoPlayer.getCurrentPosition());
+        savedInstanceState.putBoolean(EXOPLAYER_POSITION, mExoPlayer.getPlayWhenReady());
+    }
 
 
     public boolean isInLandscapeMode( Context context ) {
