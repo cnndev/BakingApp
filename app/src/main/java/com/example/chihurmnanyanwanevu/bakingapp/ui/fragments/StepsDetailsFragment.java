@@ -351,6 +351,10 @@ public class StepsDetailsFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle currentState) {
+        if (mExoPlayer != null) {
+            currentState.putLong(EXOPLAYER_POSITION, mExoPlayer.getCurrentPosition());
+            currentState.putBoolean(EXOPLAYER_POSITION, mExoPlayer.getPlayWhenReady());
+        }
         super.onSaveInstanceState(currentState);
         currentState.putParcelableArrayList(STEP_CLICKED,steps);
         currentState.putInt(NUMBER_OF_STEPS,selectedIndex);
