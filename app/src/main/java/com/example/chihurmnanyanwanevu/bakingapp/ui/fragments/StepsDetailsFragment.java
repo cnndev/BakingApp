@@ -9,11 +9,8 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +23,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.chihurmnanyanwanevu.bakingapp.data.models.Recipe;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -37,10 +33,7 @@ import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
-import com.google.android.exoplayer2.upstream.BandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
@@ -50,19 +43,11 @@ import com.example.chihurmnanyanwanevu.bakingapp.ui.activities.RecipeActivity;
 import com.example.chihurmnanyanwanevu.bakingapp.ui.activities.StepDetailsActivity;
 import com.example.chihurmnanyanwanevu.bakingapp.ui.activities.StepsActivity;
 import com.example.chihurmnanyanwanevu.bakingapp.utils.NetworkUtil;
-import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static android.content.ContentValues.TAG;
-
-/**
- * Created by Chihurumnanya.
- */
 
 public class StepsDetailsFragment extends Fragment {
 
@@ -112,15 +97,10 @@ public class StepsDetailsFragment extends Fragment {
     private Integer position;
 
     private Integer numberOfSteps;
-    private BandwidthMeter bandwidthMeter;
+
     private boolean isTablet;
 
     private Long exoplayer_position;
-    ArrayList<Recipe> recipe;
-    String recipeName;
-    private ArrayList<Step> steps = new ArrayList<>();
-    private int selectedIndex;
-    private Handler mainHandler;
 
     private BroadcastReceiver receiver;
     private IntentFilter intentFilter;
@@ -129,28 +109,10 @@ public class StepsDetailsFragment extends Fragment {
     int width = 0;
     int height = 0;
 
-
-    private ListItemClickListener itemClickListener;
-    public interface ListItemClickListener {
-        void onListItemClick(List<Step> allSteps,int Index,String recipeName);
-    }
-
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        TextView textView;
-        mainHandler = new Handler();
-        bandwidthMeter = new DefaultBandwidthMeter();
-        recipe = new ArrayList<>();
+        View root = inflater.inflate(R.layout.recipe_steps_details, container, false);
 
-        View rootView = inflater.inflate(R.layout.recipe_steps_details, container, false);
         ButterKnife.bind(this, root);
-
-        String imageUrl=steps.get(selectedIndex).getThumbnailURL();
-        if (imageUrl!="") {
-            Uri builtUri = Uri.parse(imageUrl).buildUpon().build();
-            ImageView thumbImage = (ImageView) rootView.findViewById(R.id.thumbnailurl);
-            Picasso.with(getContext()).load(builtUri).into(thumbImage);
-        }
-
 
         if (savedInstanceState != null) {
             if (savedInstanceState.get(EXOPLAYER_POSITION) != null) {
@@ -173,14 +135,12 @@ public class StepsDetailsFragment extends Fragment {
 
             if (position == 0) {
                 prevVideo.setVisibility(View.INVISIBLE);
-            } else if (position == numberOfSteps - 1) {
+            } else if(position == numberOfSteps - 1) {
                 nextVideo.setVisibility(View.INVISIBLE);
             }
 
             currentStep.setText((position + 1) + "/" + numberOfSteps);
         }
-
-
 
         prevVideo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,7 +162,6 @@ public class StepsDetailsFragment extends Fragment {
 
         return root;
     }
-
 
     private void setStepDescriptionText(int position) {
         stepDescription.setText(step.getDescription());
@@ -272,9 +231,7 @@ public class StepsDetailsFragment extends Fragment {
     public void onConfigurationChanged(final Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
-        if (isTablet) {
-            return;
-        }
+        if (isTablet) { return; }
 
         setSpecificCaseUi();
 
@@ -288,11 +245,8 @@ public class StepsDetailsFragment extends Fragment {
         }
     }
 
-
     private void setSpecificCaseUi() {
-        if (isTablet) {
-            return;
-        }
+        if (isTablet) { return; }
 
         exoPlayerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
@@ -309,7 +263,6 @@ public class StepsDetailsFragment extends Fragment {
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
@@ -318,7 +271,7 @@ public class StepsDetailsFragment extends Fragment {
         viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
                     root.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 } else {
                     root.getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -342,7 +295,6 @@ public class StepsDetailsFragment extends Fragment {
         });
     }
 
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -361,29 +313,12 @@ public class StepsDetailsFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle currentState) {
-        if (mExoPlayer != null) {
-            currentState.putLong(EXOPLAYER_POSITION, mExoPlayer.getCurrentPosition());
-            currentState.putBoolean(EXOPLAYER_POSITION, mExoPlayer.getPlayWhenReady());
-        }
-        super.onSaveInstanceState(currentState);
-        currentState.putParcelableArrayList(STEP_CLICKED,steps);
-        currentState.putInt(NUMBER_OF_STEPS,selectedIndex);
-        currentState.putString("Title",recipeName);
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-    }
-    
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        Log.d(TAG, "onRestoreInstanceState: ");
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putLong("position", mExoPlayer.getCurrentPosition());
-        savedInstanceState.putBoolean(EXOPLAYER_POSITION, mExoPlayer.getPlayWhenReady());
+        outState.putLong(EXOPLAYER_POSITION, mExoPlayer.getCurrentPosition());
     }
 
-
-    public boolean isInLandscapeMode( Context context ) {
-        return (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
-    }
 
 
     @Override
@@ -394,18 +329,10 @@ public class StepsDetailsFragment extends Fragment {
         }
     }
 
-
     @Override
     public void onStop() {
         super.onStop();
         if (Util.SDK_INT > 23) {
-            releasePlayer();
-        }
-    }
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (Util.SDK_INT <= 23) {
             releasePlayer();
         }
     }
