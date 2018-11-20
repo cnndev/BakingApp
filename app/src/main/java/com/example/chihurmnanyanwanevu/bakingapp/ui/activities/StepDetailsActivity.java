@@ -1,13 +1,16 @@
 package com.example.chihurmnanyanwanevu.bakingapp.ui.activities;
 
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.chihurmnanyanwanevu.bakingapp.R;
 import com.example.chihurmnanyanwanevu.bakingapp.data.models.Step;
 import com.example.chihurmnanyanwanevu.bakingapp.ui.fragments.StepsDetailsFragment;
+import com.squareup.picasso.Picasso;
 
 
 import java.util.List;
@@ -15,20 +18,25 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-    /*
-        This activity is reachable only on a phone and it displays
-        the fragment which contains the video describing the step
-        and it's details
-     */
+import static android.support.test.InstrumentationRegistry.getContext;
+
+/*
+    This activity is reachable only on a phone and it displays
+    the fragment which contains the video describing the step
+    and it's details
+ */
     public class StepDetailsActivity extends AppCompatActivity implements StepsDetailsFragment.Callback {
 
         public static final String STEP_CLICKED = "step_clicked_step_details_activity";
         public static final String STEPS_SENT = "steps_sent_step_details_activity";
         private static final String STEP_DETAILS_FRAGMENT = "step_details_fragment";
+        private int selectedIndex;
 
         private StepsDetailsFragment stepsDetailsFragment;
 
+
         List<Step> steps;
+
 
         Integer position;
 
@@ -38,6 +46,7 @@ import butterknife.ButterKnife;
             setContentView(R.layout.activity_step_details);
 
             ButterKnife.bind(this);
+
 
             if (getIntent().hasExtra(STEPS_SENT)) {
                 steps = getIntent().getParcelableArrayListExtra(STEPS_SENT);
@@ -57,6 +66,7 @@ import butterknife.ButterKnife;
                             .replace(R.id.recipeStepsDetailsFragmentLayout, stepsDetailsFragment)
                             .commit();
                 }
+
             }
         }
 
@@ -69,7 +79,8 @@ import butterknife.ButterKnife;
         @Override
         protected void onRestoreInstanceState(Bundle savedInstanceState) {
             super.onRestoreInstanceState(savedInstanceState);
-            stepsDetailsFragment = (StepsDetailsFragment) getSupportFragmentManager().getFragment(savedInstanceState,STEP_DETAILS_FRAGMENT);
+            stepsDetailsFragment = (StepsDetailsFragment)
+                    getSupportFragmentManager().getFragment(savedInstanceState,STEP_DETAILS_FRAGMENT);
 
             if(stepsDetailsFragment.isAdded()) {
                 return;
