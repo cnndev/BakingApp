@@ -37,8 +37,7 @@
                 android:layout_height="50dp"
                 android:id="@+id/thumbnailurl"
                 android:src="@drawable/ic_back"
-                android:visibility="invisible"
-                android:scaleType="centerCrop"/>
+                android:visibility="gone" />
 
 
         </FrameLayout>

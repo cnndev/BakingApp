@@ -24,6 +24,7 @@ public class Recipe implements Parcelable {
     private Integer servings;
     private String image;
 
+
     public Recipe() {}
 
     protected Recipe(Parcel in) {

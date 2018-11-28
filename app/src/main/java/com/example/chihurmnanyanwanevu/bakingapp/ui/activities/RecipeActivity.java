@@ -57,6 +57,7 @@ public class RecipeActivity extends AppCompatActivity {
     IntentFilter intentFilter;
 
     public static final String RECIPE_SENT = "recipe_sent";
+    public static String SELECTED_INDEX="Selected_Index";
     final String TABLET = "tablet";
     boolean isConnected;
 

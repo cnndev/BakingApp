@@ -1,8 +1,14 @@
 package com.example.chihurmnanyanwanevu.bakingapp.utils;
 
+import android.net.Uri;
+import android.widget.ImageView;
+
 import com.example.chihurmnanyanwanevu.bakingapp.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
+
+import static android.support.test.InstrumentationRegistry.getContext;
 
 /**
  * Created by Chihurumnanya.

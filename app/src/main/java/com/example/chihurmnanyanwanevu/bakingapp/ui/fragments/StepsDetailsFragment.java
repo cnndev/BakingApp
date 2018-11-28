@@ -1,6 +1,5 @@
 package com.example.chihurmnanyanwanevu.bakingapp.ui.fragments;
 
-
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,6 +9,7 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -25,7 +25,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.chihurmnanyanwanevu.bakingapp.data.models.Recipe;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -37,8 +36,6 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
-import com.google.android.exoplayer2.upstream.BandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
@@ -52,15 +49,24 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Handler;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static android.content.ContentValues.TAG;
+import static com.example.chihurmnanyanwanevu.bakingapp.ui.activities.StepDetailsActivity.SELECTED_INDEX;
 
+/**
+ * Created by Chihurumnanya
+ */
 
 public class StepsDetailsFragment extends Fragment {
+
+    private ListItemClickListener itemClickListener;
+
+    public interface ListItemClickListener {
+        void onListItemClick(List<Step> allSteps, int Index, String recipeName);
+    }
 
     public interface Callback {
         void onNewStepSelected(int position);
@@ -71,7 +77,6 @@ public class StepsDetailsFragment extends Fragment {
     public static final String STEP_CLICKED = "step_clicked_step_details_fragment";
     public static final String NUMBER_OF_STEPS = "number_of_steps";
     public static final String IS_TABLET = "is_tablet";
-    public static final String RECIPE = "Recipe_name";
 
     Callback mCallback;
 
@@ -93,6 +98,9 @@ public class StepsDetailsFragment extends Fragment {
     @BindView(R.id.stepDescription_tv)
     TextView stepDescription;
 
+    @BindView(R.id.thumbnailurl)
+    ImageView ThumbnailUrl;
+
     @BindView(R.id.nextVideoBtn)
     FloatingActionButton nextVideo;
 
@@ -108,19 +116,17 @@ public class StepsDetailsFragment extends Fragment {
 
     private Integer position;
 
-
-    private BandwidthMeter bandwidthMeter;
+    private int selectedIndex;
 
 
     private Integer numberOfSteps;
 
     private boolean isTablet;
-
+    private String recipeName;
     private Long exoplayer_position;
-    ArrayList<Recipe> recipe;
-    String recipeName;
+
     private ArrayList<Step> steps = new ArrayList<>();
-    private int selectedIndex;
+
 
     private BroadcastReceiver receiver;
     private IntentFilter intentFilter;
@@ -129,16 +135,21 @@ public class StepsDetailsFragment extends Fragment {
     int width = 0;
     int height = 0;
 
-
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        bandwidthMeter = new DefaultBandwidthMeter();
-        recipe = new ArrayList<>();
-        View rootView = inflater.inflate(R.layout.recipe_steps_details, container, false);
-
-        ButterKnife.bind(this, rootView);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View root = inflater.inflate(R.layout.recipe_steps_details, container, false);
+        ButterKnife.bind(this, root);
+        // ImageUrl Crashes the app...App works perfectly without this block of code
+        /*String imageUrl = steps.get(selectedIndex).getThumbnailURL();
+        selectedIndex = 0;
+        if (imageUrl == "") {
+            Uri builtUri = Uri.parse(imageUrl).buildUpon().build();
+            ImageView ThumbnairlUrl = (ImageView) root.findViewById(R.id.thumbnailurl);
+            Picasso.with(getContext()).load(builtUri).into(ThumbnairlUrl);
+        }*/
 
         if (savedInstanceState != null) {
             if (savedInstanceState.get(EXOPLAYER_POSITION) != null) {
+                selectedIndex = savedInstanceState.getInt(SELECTED_INDEX);
                 exoplayer_position = savedInstanceState.getLong(EXOPLAYER_POSITION);
             }
         }
@@ -163,14 +174,6 @@ public class StepsDetailsFragment extends Fragment {
             }
 
             currentStep.setText((position + 1) + "/" + numberOfSteps);
-        }
-
-        String imageUrl = steps.get(selectedIndex).getThumbnailURL();
-        if (imageUrl != "") {
-            Uri builtUri = Uri.parse(imageUrl).buildUpon().build();
-            ImageView thumbImage = (ImageView) rootView.findViewById(R.id.thumbnailurl);
-            Picasso.with(getContext()).load(builtUri).into(thumbImage);
-
         }
 
         prevVideo.setOnClickListener(new View.OnClickListener() {
@@ -311,6 +314,7 @@ public class StepsDetailsFragment extends Fragment {
                 } else {
                     root.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
+
                 int config = getResources().getConfiguration().orientation;
 
                 if (config != 1) {
@@ -354,8 +358,7 @@ public class StepsDetailsFragment extends Fragment {
         }
         super.onSaveInstanceState(currentState);
         currentState.putInt(STEP_CLICKED, position);
-        currentState.putInt(NUMBER_OF_STEPS, selectedIndex);
-        currentState.putString("Title", recipeName);
+        currentState.putInt(NUMBER_OF_STEPS, numberOfSteps);
 
     }
 
@@ -365,7 +368,6 @@ public class StepsDetailsFragment extends Fragment {
         savedInstanceState.putLong("position", mExoPlayer.getCurrentPosition());
         savedInstanceState.putInt(STEP_CLICKED, position);
         savedInstanceState.putInt(NUMBER_OF_STEPS, numberOfSteps);
-        savedInstanceState.putString("Title", RECIPE);
         savedInstanceState.putBoolean(EXOPLAYER_POSITION, mExoPlayer.getPlayWhenReady());
     }
 
